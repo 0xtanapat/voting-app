@@ -3,11 +3,9 @@ package voting;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +25,7 @@ public class BallotPaperFrame extends JFrame implements ActionListener {
 	int eligible_voters;
 	int party_num;
 	int counter = 0;
+	List<JRadioButton> radioBtnList;
 	
 	BallotPaperFrame(int eligible_voters, int party_num) {
 		this.eligible_voters = eligible_voters;
@@ -46,8 +45,10 @@ public class BallotPaperFrame extends JFrame implements ActionListener {
         add(label);
         
         group = new ButtonGroup();
+        radioBtnList = new ArrayList<>();
         for (int i = 0; i < party_num; i++) {
         	JRadioButton radioBtn = new JRadioButton("Party " + (i + 1));
+        	radioBtnList.add(radioBtn);
         	group.add(radioBtn);
 			add(radioBtn);
 		}
@@ -66,13 +67,26 @@ public class BallotPaperFrame extends JFrame implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() == btn) {
+		int party_selected = 0;
+		for (int i = 0; i < party_num; i++) {
+			if (radioBtnList.get(i).isSelected()) {
+				party_selected = i + 1;
+				System.out.println("Selected party: " + party_selected);
+			}
+		}
+		
+		if (party_selected == 0) {
+			JOptionPane.showMessageDialog(null, "Please select at least 1 party!");
+			return;
+		}
+		
+		if (e.getSource() == btn ) {
 			counter++;
 			if (counter > eligible_voters) {
 				JOptionPane.showMessageDialog(null, "Error!");
             } else {
             	sendNumberToServer(party_selected);
-            	System.out.println("Sent " + counter);
+            	System.out.println("Vote #" + counter + ". Party selected: " + party_selected);
             }
 		}
 	}
@@ -82,12 +96,12 @@ public class BallotPaperFrame extends JFrame implements ActionListener {
 		int port = 3000;
 		
 		try (Socket socket = new Socket(localhost, port)) {
-            OutputStream outputStream = socket.getOutputStream();
-            outputStream.write(counter);
-            outputStream.flush();
-            JOptionPane.showMessageDialog(null, "Number sent to the server: " + counter);
-        } catch (IOException e1) {
-            e1.printStackTrace();
-        }  
+		    OutputStream outputStream = socket.getOutputStream();
+		    outputStream.write(counter);
+		    outputStream.flush();
+		    JOptionPane.showMessageDialog(null, "Number sent to the server: " + counter);
+		} catch (IOException e1) {
+		    e1.printStackTrace();
+		}  
 	}
 }
