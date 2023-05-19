@@ -96,12 +96,12 @@ public class BallotPaperFrame extends JFrame implements ActionListener {
 		int port = 3000;
 		
 		try (Socket socket = new Socket(localhost, port)) {
-		    OutputStream outputStream = socket.getOutputStream();
-		    outputStream.write(counter);
-		    outputStream.flush();
-		    JOptionPane.showMessageDialog(null, "Number sent to the server: " + counter);
-		} catch (IOException e1) {
-		    e1.printStackTrace();
-		}  
+            OutputStream outputStream = socket.getOutputStream();
+            outputStream.write(counter);
+            outputStream.flush();
+            JOptionPane.showMessageDialog(null, "Number sent to the server: " + counter);
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }  
 	}
 }
