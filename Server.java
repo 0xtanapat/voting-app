@@ -12,6 +12,7 @@ public class Server {
 	public static void main(String args[]) {
 		int port = 3000;
 		List<Integer> numbersReceived = new ArrayList<>();
+		int[] electionResults;
 		
 		try {
 			ServerSocket serverSocket = new ServerSocket(port);
@@ -24,7 +25,8 @@ public class Server {
             DataInputStream dataInputStream = new DataInputStream(clientSocket.getInputStream());
             int eligible_voters = dataInputStream.readInt();
             int party_num = dataInputStream.readInt();
-            System.out.println("Received number of eligible voters and number of parties from client: " + eligible_voters + " and " + party_num + " respectively.");
+            electionResults = new int[party_num + 1];
+            System.out.println("Received number of eligible voters and number of parties from the client: " + eligible_voters + " and " + party_num + " respectively.");
 
             dataInputStream.close();
             clientSocket.close();
@@ -43,6 +45,19 @@ public class Server {
             }
             System.out.println("All done voting. Server is stopping.");
             serverSocket.close();
+            
+            
+            for (int n : numbersReceived) {
+            	electionResults[n]++;
+            }
+            
+            int most_voted = 0;
+            for (int i = 1; i < electionResults.length; i++) {
+            	if (electionResults[i] > most_voted) {
+            		most_voted = i;
+            	}
+            }
+            System.out.println("Winning party: " + most_voted);
 		} catch (IOException e) {
             e.printStackTrace();
         }

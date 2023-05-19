@@ -71,7 +71,6 @@ public class BallotPaperFrame extends JFrame implements ActionListener {
 		for (int i = 0; i < party_num; i++) {
 			if (radioBtnList.get(i).isSelected()) {
 				party_selected = i + 1;
-				System.out.println("Selected party: " + party_selected);
 			}
 		}
 		
