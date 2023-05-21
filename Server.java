@@ -9,10 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Server {
+	
 	public static void main(String args[]) {
 		int port = 3000;
-		List<Integer> numbersReceived = new ArrayList<>();
-		int[] electionResults;
 		
 		try {
 			ServerSocket serverSocket = new ServerSocket(port);
@@ -21,45 +20,69 @@ public class Server {
 
             Socket clientSocket = serverSocket.accept();
             System.out.println("Client connected.");
-
-            DataInputStream dataInputStream = new DataInputStream(clientSocket.getInputStream());
-            int eligible_voters = dataInputStream.readInt();
-            int party_num = dataInputStream.readInt();
-            electionResults = new int[party_num + 1];
-            System.out.println("Received number of eligible voters and number of parties from the client: " + eligible_voters + " and " + party_num + " respectively.");
-
-            dataInputStream.close();
-            clientSocket.close();
-        
-            while (numbersReceived.size() < eligible_voters) {
-                Socket socket = serverSocket.accept();
-                System.out.println("Client connected.");
-
-                InputStream inputStream = socket.getInputStream();
-                int number = inputStream.read();
-                numbersReceived.add(number);
-
-                System.out.println("Received number: " + number);
-
-                socket.close();
-            }
-            System.out.println("All done voting. Server is stopping.");
-            serverSocket.close();
             
+            ClientHandler clientHandler = new ClientHandler(clientSocket, serverSocket);
             
-            for (int n : numbersReceived) {
-            	electionResults[n]++;
-            }
-            
-            int most_voted = 0;
-            for (int i = 1; i < electionResults.length; i++) {
-            	if (electionResults[i] > most_voted) {
-            		most_voted = i;
-            	}
-            }
-            System.out.println("Winning party: " + most_voted);
+            new Thread(clientHandler).start();
 		} catch (IOException e) {
             e.printStackTrace();
         }
+	}
+	
+	public static class ClientHandler implements Runnable {
+		Socket clientSocket;
+		ServerSocket serverSocket;
+
+		List<Integer> numbersReceived = new ArrayList<>();
+		int[] electionResults;
+		
+		public ClientHandler(Socket clientSocket, ServerSocket serverSocket) {
+			this.clientSocket = clientSocket;
+			this.serverSocket = serverSocket;
+		}
+		
+		@Override
+		public void run() {
+			try {
+				DataInputStream dataInputStream = new DataInputStream(clientSocket.getInputStream());
+		        int eligible_voters = dataInputStream.readInt();
+		        int party_num = dataInputStream.readInt();
+		        electionResults = new int[party_num + 1];
+		        System.out.println("Received number of eligible voters and number of parties from the client: " + eligible_voters + " and " + party_num + " respectively.");
+
+		        dataInputStream.close();
+		        clientSocket.close();
+		    
+		        while (numbersReceived.size() < eligible_voters) {
+		            Socket socket = serverSocket.accept();
+		            System.out.println("Client connected.");
+
+		            InputStream inputStream = socket.getInputStream();
+		            int number = inputStream.read();
+		            numbersReceived.add(number);
+
+		            System.out.println("Received number: " + number);
+
+		            socket.close();
+		        }
+		        System.out.println("All done voting. Server is stopping.");
+		        serverSocket.close();
+		        
+		        
+		        for (int n : numbersReceived) {
+		        	electionResults[n]++;
+		        }
+		        
+		        int most_voted = 0;
+		        for (int i = 1; i < electionResults.length; i++) {
+		        	if (electionResults[i] > most_voted) {
+		        		most_voted = i;
+		        	}
+		        }
+		        System.out.println("Winning party: " + most_voted);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 }
