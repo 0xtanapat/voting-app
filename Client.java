@@ -10,8 +10,10 @@ public class Client {
 		String localhost = "127.0.0.1";
 		int port = 3000;
 		
-		int eligible_voters = 10;
-		int party_num = 5;
+		int eligible_voters = 4;
+		int party_num = 3;
+		
+//		new PromptFrame();
 		
 		try (Socket socket = new Socket(localhost, port)) {
 			System.out.println("Connected to server on port " + port + ": " + localhost);

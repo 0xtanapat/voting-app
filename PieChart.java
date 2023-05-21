@@ -3,68 +3,63 @@ package voting;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Arc2D;
+import java.util.Random;
 
-public class PieChartExample extends JFrame {
-    private JPanel chartPanel;
+public class PieChart extends JFrame {
+	Random rand = new Random();
+    JPanel panel;
+    
+    int size = 400;
 
-    public PieChartExample() {
-        setTitle("Pie Chart Example");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        chartPanel = new JPanel() {
+    public PieChart(int[] electionResults, int most_voted) {
+        panel = new JPanel() {
             @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
+            public void paintComponent(Graphics graphics) {
+                super.paintComponent(graphics);
 
-                Graphics2D g2d = (Graphics2D) g;
+                Graphics2D g2d = (Graphics2D) graphics;
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-                // Define data
-                int[] values = {30, 40, 20, 10};
-                String[] labels = {"Label 1", "Label 2", "Label 3", "Label 4"};
-
-                // Calculate total value
+                g2d.drawString("Winning party: " + Integer.toString(most_voted), size / 2 - 50, 30);
+                
                 int total = 0;
-                for (int value : values) {
+                for (int value : electionResults) {
                     total += value;
                 }
 
-                // Draw pie chart segments
+                Color[] colors = new Color[electionResults.length];
                 int startAngle = 0;
-                for (int i = 0; i < values.length; i++) {
-                    int arcAngle = (int) Math.round(360.0 * values[i] / total);
+                for (int i = 1; i < electionResults.length; i++) {
+                    int extentAngle = (int) Math.round(360 * electionResults[i] / total);
+                    
+                    float r = rand.nextFloat();
+                	float g = rand.nextFloat();
+                	float b = rand.nextFloat();
+                	colors[i] = new Color(r, g, b);
 
-                    g2d.setColor(getColor(i));
-                    g2d.fill(new Arc2D.Double(50, 50, 200, 200, startAngle, arcAngle, Arc2D.PIE));
+                    g2d.setColor(colors[i]);
+                    g2d.fill(new Arc2D.Double(50, 50, 200, 200, startAngle, extentAngle, Arc2D.PIE));
 
-                    startAngle += arcAngle;
+                    startAngle += extentAngle;
                 }
 
-                // Draw legend
-                int x = 300;
-                int y = 50;
-                for (int i = 0; i < values.length; i++) {
-                    g2d.setColor(getColor(i));
+                int x = size - 100;
+                int y = size - 350;
+                for (int i = 1; i < electionResults.length; i++) {
+                    g2d.setColor(colors[i]);
                     g2d.fillRect(x, y, 20, 20);
+                    
                     g2d.setColor(Color.BLACK);
-                    g2d.drawString(labels[i], x + 30, y + 15);
+                    g2d.drawString("Party " + i, x + 30, y + 15);
                     y += 30;
                 }
             }
         };
-
-        add(chartPanel);
-
-        setSize(400, 400);
+        add(panel);
+        
+        setTitle("Election Result");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setResizable(false);
+        setSize(size, size);
         setVisible(true);
-    }
-
-    private Color getColor(int index) {
-        Color[] colors = {Color.RED, Color.GREEN, Color.BLUE, Color.ORANGE};
-        return colors[index % colors.length];
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(PieChartExample::new);
     }
 }

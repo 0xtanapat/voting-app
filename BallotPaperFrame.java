@@ -35,15 +35,8 @@ public class BallotPaperFrame extends JFrame implements ActionListener {
 		label.setText("Ballot Paper");
 		label.setHorizontalAlignment(JLabel.CENTER);
 		label.setVerticalAlignment(JLabel.TOP);
+		add(label);
 		
-		setTitle("Ballot paper");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setResizable(false);
-        setSize(640, 640);
-        setLayout(new GridLayout(10, 1, 10, 10));
-        
-        add(label);
-        
         group = new ButtonGroup();
         radioBtnList = new ArrayList<>();
         for (int i = 0; i < party_num; i++) {
@@ -55,13 +48,13 @@ public class BallotPaperFrame extends JFrame implements ActionListener {
         
         btn = new JButton("Submit");
         btn.addActionListener(this);
-//        int btnWidth = 100;
-//        int btnHeight = 50;
-//        int btnX = (getWidth() - btnWidth) / 2;
-//        int btnY = getHeight() - btnHeight;
-//        btn.setBounds(btnX, btnY, btnWidth, btnHeight);
         add(btn);
         
+        setTitle("Ballot paper");
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setResizable(false);
+        setSize(640, 640);
+        setLayout(new GridLayout(10, 1, 10, 10));
         setVisible(true);
 	}
 
@@ -98,7 +91,7 @@ public class BallotPaperFrame extends JFrame implements ActionListener {
             OutputStream outputStream = socket.getOutputStream();
             outputStream.write(party_selected);
             outputStream.flush();
-            JOptionPane.showMessageDialog(null, "Number sent to the server: " + party_selected);
+            JOptionPane.showMessageDialog(null, "You have voted party: " + party_selected);
         } catch (IOException e1) {
             e1.printStackTrace();
         }  

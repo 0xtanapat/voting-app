@@ -80,6 +80,8 @@ public class Server {
 		        	}
 		        }
 		        System.out.println("Winning party: " + most_voted);
+		        
+		        new PieChart(electionResults, most_voted);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
